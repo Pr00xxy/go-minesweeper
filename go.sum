@@ -1,0 +1,8 @@
+github.com/famz/SetLocale v0.0.0-20140414113655-0457ad1065dd h1:AwrM2Zy3xXTjdGwwxxzhFNBME1DtXuW+/ThEnGmW4M4=
+github.com/famz/SetLocale v0.0.0-20140414113655-0457ad1065dd/go.mod h1:GNjuOaiKbnzrSsZeuQqVD+sBwmEQ7pPhnZS4zfUbmPk=
+github.com/rthornton128/goncurses v0.0.0-20231014161942-82671379df88 h1:bNvZ7P4l4rvg1O3qNDRJ4FNgKASMoG+V7OIpu4SIkgA=
+github.com/rthornton128/goncurses v0.0.0-20231014161942-82671379df88/go.mod h1:AHlKFomPTwmO7H2vL8d7VNrQNQmhMi/DBhDnHRhjbCo=
+golang.org/x/sys v0.0.0-20210317225723-c4fcb01b228e h1:XNp2Flc/1eWQGk5BLzqTAN7fQIwIbfyVTuVxXxZh73M=
+golang.org/x/sys v0.0.0-20210317225723-c4fcb01b228e/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+seehuhn.de/go/ncurses v0.2.0 h1:ZV256n0GIMVEHJnECliGMffzdFsEoT7krJqdfGoYD1E=
+seehuhn.de/go/ncurses v0.2.0/go.mod h1:oAc9Y+UN0tflNV0iME++z0ij9uNmIjdxQFkpGoRMd2E=
