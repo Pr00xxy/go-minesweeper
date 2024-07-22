@@ -15,10 +15,17 @@ type GameSettings struct {
 	mines  int
 }
 
+type CellState int
+
+const (
+	CLOSED  CellState = 0
+	OPENED  CellState = 1
+	FLAGGED CellState = 2
+)
+
 type Cell struct {
 	isBomb    bool
-	isFlagged bool
-	isOpen    bool
+	state     CellState
 	adjacency int
 }
 
@@ -39,11 +46,22 @@ var diagonalDirections = []struct{ dr, dc int }{
 	{1, -1}, {1, 1},
 }
 
+func NewCell() Cell {
+	return Cell{
+		state:     CLOSED,
+		isBomb:    false,
+		adjacency: 0,
+	}
+}
+
 func generateGrid(settings *GameSettings) [][]Cell {
 
 	grid := make([][]Cell, settings.height)
 	for i := range grid {
 		grid[i] = make([]Cell, settings.width)
+		for j := range grid[i] {
+			grid[i][j] = NewCell()
+		}
 	}
 
 	placed := 0
@@ -64,6 +82,7 @@ func generateGrid(settings *GameSettings) [][]Cell {
 			if grid[row][col].isBomb {
 				for _, dir := range append(straightDirections, diagonalDirections...) {
 					adjRow, adjCol := row+dir.dr, col+dir.dc
+					// prevent illegal indexer access
 					if adjRow >= 0 && adjRow < settings.height && adjCol >= 0 && adjCol < settings.width {
 						grid[adjRow][adjCol].adjacency++
 					}
@@ -88,20 +107,15 @@ func (b *Board) render() {
 	for _, row := range b.grid {
 		rowString := ""
 		for _, cell := range row {
-			if cell.isFlagged {
-				rowString = rowString + "F"
-				continue
-			}
-			if !cell.isOpen {
-				rowString = rowString + "."
-				continue
-			}
-			if cell.isOpen && cell.isBomb == false {
-				rowString = rowString + strconv.Itoa(cell.adjacency)
-				continue
-			}
-			if cell.isBomb {
-				rowString = rowString + "X"
+			switch {
+			case cell.state == FLAGGED:
+				rowString += "F"
+			case cell.state == CLOSED:
+				rowString += "."
+			case cell.state == OPENED && !cell.isBomb:
+				rowString += strconv.Itoa(cell.adjacency)
+			case cell.isBomb:
+				rowString += "X"
 			}
 		}
 		b.window.Print(rowString)
@@ -109,17 +123,21 @@ func (b *Board) render() {
 }
 
 func (b *Board) flagCell(x int, y int) {
-	b.grid[x][y].isFlagged = true
+	if b.grid[x][y].state == FLAGGED {
+		b.grid[x][y].state = CLOSED
+	} else {
+		b.grid[x][y].state = FLAGGED
+	}
 }
 
 func (b *Board) openCell(x int, y int) {
-	currentCell := b.grid[x][y]
+	currentCell := &b.grid[x][y]
 
-	if currentCell.isFlagged {
+	if currentCell.state == FLAGGED {
 		return
 	}
 
-	currentCell.isOpen = true
+	currentCell.state = OPENED
 
 	if currentCell.adjacency > 0 || currentCell.isBomb {
 		return
@@ -127,9 +145,10 @@ func (b *Board) openCell(x int, y int) {
 
 	for _, dir := range straightDirections {
 		adjRow, adjCol := x+dir.dr, y+dir.dc
+		// prevent illegal indexer access
 		if adjRow >= 0 && adjRow < b.settings.height && adjCol >= 0 && adjCol < b.settings.width {
 			adjacentCell := b.grid[adjRow][adjCol]
-			if !adjacentCell.isOpen && !adjacentCell.isBomb {
+			if adjacentCell.state != OPENED && !adjacentCell.isBomb {
 				b.openCell(adjRow, adjCol)
 			}
 		}
